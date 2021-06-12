@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:music_player/src/widgets/custom_appbar.dart';
 
 class MusicPlayerPage extends StatelessWidget {
@@ -10,11 +11,25 @@ class MusicPlayerPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            CustomAppBar(),
-            SizedBox(
-              height: size.height * 0.05,
-            ),
-            DiscImageAndPlayer()
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(70),
+                  ),
+                  gradient: LinearGradient(
+                    colors: [Colors.white12, Colors.black38],
+                  )),
+              child: Column(
+                children: [
+                  CustomAppBar(),
+                  SizedBox(height: size.height * 0.05),
+                  _DiscImageAndPlayer(),
+                  SizedBox(height: size.height * 0.03),
+                  _InformationSongAndPlayButton(),
+                  SizedBox(height: size.height * 0.10),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -22,7 +37,7 @@ class MusicPlayerPage extends StatelessWidget {
   }
 }
 
-class DiscImageAndPlayer extends StatelessWidget {
+class _DiscImageAndPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -112,6 +127,63 @@ class _Player extends StatelessWidget {
           Text("10:00", style: myTextStyle),
         ],
       ),
+    );
+  }
+}
+
+class _InformationSongAndPlayButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30),
+      child: Row(
+        children: [
+          _InformationSong(
+            titleSong: 'Far Away',
+            autor: 'Breaking Benjamin',
+          ),
+          Spacer(),
+          FloatingActionButton(
+            backgroundColor: Colors.amber,
+            onPressed: () {},
+            child: Icon(
+              FontAwesomeIcons.play,
+              color: Colors.black,
+              size: 18,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _InformationSong extends StatelessWidget {
+  final String titleSong;
+  final String autor;
+
+  const _InformationSong({required this.titleSong, required this.autor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          titleSong,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 35,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          "-${this.autor}-",
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.5),
+            fontSize: 15,
+          ),
+        ),
+      ],
     );
   }
 }
