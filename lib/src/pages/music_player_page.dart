@@ -29,9 +29,11 @@ class DiscImageAndPlayer extends StatelessWidget {
 
     return Container(
       // height: size.height * 0.45,
+      padding: EdgeInsets.symmetric(horizontal: 30),
       child: Row(
         children: [
           _DiscImage(),
+          Spacer(),
           _Player(),
         ],
       ),
@@ -90,6 +92,26 @@ class _DiscImage extends StatelessWidget {
 class _Player extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final size = MediaQuery.of(context).size;
+    final myTextStyle = TextStyle(color: Colors.white.withOpacity(0.3));
+    return Container(
+      child: Column(
+        children: [
+          Text("00:00", style: myTextStyle),
+          SizedBox(height: size.height * 0.03),
+          Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Container(
+                  height: size.height * 0.25, width: 3, color: Colors.blueGrey),
+              Container(
+                  height: size.height * 0.10, width: 3, color: Colors.white),
+            ],
+          ),
+          SizedBox(height: size.height * 0.03),
+          Text("10:00", style: myTextStyle),
+        ],
+      ),
+    );
   }
 }
