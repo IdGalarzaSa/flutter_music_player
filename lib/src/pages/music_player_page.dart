@@ -1,7 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:music_player/src/helpers/helpers.dart';
 import 'package:music_player/src/models/player_model.dart';
 import 'package:music_player/src/widgets/custom_appbar.dart';
@@ -176,7 +175,7 @@ class _Player extends StatelessWidget {
               Container(
                   height: size.height * 0.25, width: 3, color: Colors.blueGrey),
               Container(
-                  height: ((size.height * 0.10) * playerModel.songPercentage),
+                  height: ((size.height * 0.25) * playerModel.songPercentage),
                   width: 3,
                   color: Colors.white),
             ],
