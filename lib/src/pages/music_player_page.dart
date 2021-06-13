@@ -119,7 +119,7 @@ class _DiscImage extends StatelessWidget {
               duration: Duration(seconds: 10),
               infinite: true,
               manualTrigger: true,
-              animate: playerModel.isPlaying,
+              animate: false,
               controller: (currentController) =>
                   playerModel.controller = currentController,
               child: Image(image: AssetImage('assets/aurora.jpg')),
@@ -162,10 +162,13 @@ class _Player extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final myTextStyle = TextStyle(color: Colors.white.withOpacity(0.3));
+
+    final playerModel = Provider.of<PlayerModel>(context);
+
     return Container(
       child: Column(
         children: [
-          Text("00:00", style: myTextStyle),
+          Text("${playerModel.totalSongDurationAsString}", style: myTextStyle),
           SizedBox(height: size.height * 0.03),
           Stack(
             alignment: Alignment.bottomCenter,
@@ -173,11 +176,14 @@ class _Player extends StatelessWidget {
               Container(
                   height: size.height * 0.25, width: 3, color: Colors.blueGrey),
               Container(
-                  height: size.height * 0.10, width: 3, color: Colors.white),
+                  height: ((size.height * 0.10) * playerModel.songPercentage),
+                  width: 3,
+                  color: Colors.white),
             ],
           ),
           SizedBox(height: size.height * 0.03),
-          Text("10:00", style: myTextStyle),
+          Text("${playerModel.currentSongDurationAsString}",
+              style: myTextStyle),
         ],
       ),
     );
@@ -194,7 +200,8 @@ class __InformationSongAndPlayButtonState
     extends State<_InformationSongAndPlayButton>
     with SingleTickerProviderStateMixin {
   late AnimationController animationController;
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  final audioPlayer = AssetsAudioPlayer();
+  bool audioWasLoading = false;
 
   @override
   void initState() {
@@ -214,8 +221,21 @@ class __InformationSongAndPlayButtonState
     super.dispose();
   }
 
-  void open() {
-    final playerModel = Provider.of<PlayerModel>(context);
+  Future<void> open() async {
+    final playerModel = Provider.of<PlayerModel>(context, listen: false);
+
+    await audioPlayer.open(Audio("assets/Breaking-Benjamin-Far-Away.mp3"));
+
+    // Total duration
+    audioPlayer.current.listen((playingAudio) {
+      playerModel.totalSongDuration =
+          playingAudio?.audio.duration ?? Duration(milliseconds: 0);
+    });
+
+    // current duration
+    audioPlayer.currentPosition.listen((currentDuration) {
+      playerModel.currentSongDuration = currentDuration;
+    });
   }
 
   @override
@@ -231,18 +251,24 @@ class __InformationSongAndPlayButtonState
           Spacer(),
           FloatingActionButton(
               backgroundColor: Colors.amber,
-              onPressed: () {
+              onPressed: () async {
                 final playerModel =
                     Provider.of<PlayerModel>(context, listen: false);
+
+                if (!audioWasLoading) {
+                  await this.open();
+                }
 
                 if (playerModel.isPlaying) {
                   playerModel.isPlaying = false;
                   animationController.reverse();
                   playerModel.controller?.stop();
+                  audioPlayer.stop();
                 } else {
                   playerModel.isPlaying = true;
                   animationController.forward();
                   playerModel.controller?.repeat();
+                  audioPlayer.play();
                 }
               },
               child: AnimatedIcon(

@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 class PlayerModel extends ChangeNotifier {
   bool _isPlaying = false;
 
-  Duration _songDuration = new Duration(microseconds: 0);
-  Duration _currentSongTime = new Duration(microseconds: 0);
+  Duration _totalSongDuration = new Duration(microseconds: 0);
+  Duration _currentSongDuration = new Duration(microseconds: 0);
 
   AnimationController? _controller;
 
+  // animation controller
   set controller(AnimationController? newAnimationController) {
     this._controller = newAnimationController;
   }
 
   AnimationController? get controller => this._controller;
 
+  // is playing
   set isPlaying(bool newValue) {
     this._isPlaying = newValue;
     notifyListeners();
@@ -21,14 +23,25 @@ class PlayerModel extends ChangeNotifier {
 
   bool get isPlaying => this._isPlaying;
 
-  set songDuration(Duration newValue) => this._songDuration = newValue;
-  Duration get songDuration => this._songDuration;
+  // total song duration
+  set totalSongDuration(Duration newValue) {
+    this._totalSongDuration = newValue;
+    notifyListeners();
+  }
 
-  set currentSongTime(Duration newValue) => this._currentSongTime = newValue;
-  Duration get currentSongTime => this._currentSongTime;
+  Duration get totalSongDuration => this._totalSongDuration;
 
-  double get songPercentage => this._songDuration.inSeconds > 0
-      ? this._currentSongTime.inSeconds / this._songDuration.inSeconds
+  // current song duration
+  set currentSongDuration(Duration newValue) {
+    this._currentSongDuration = newValue;
+    notifyListeners();
+  }
+
+  Duration get currentSongDuration => this._currentSongDuration;
+
+  // extras
+  double get songPercentage => this._totalSongDuration.inSeconds > 0
+      ? this._currentSongDuration.inSeconds / this._totalSongDuration.inSeconds
       : 0;
 
   String printCurrentDuration(Duration duration) {
@@ -43,7 +56,8 @@ class PlayerModel extends ChangeNotifier {
     return '$twoDigitsMinutes:$twoDigitsSeconds';
   }
 
-  String get totalSongDuration => this.printCurrentDuration(this._songDuration);
-  String get currentSongDuration =>
-      this.printCurrentDuration(this._currentSongTime);
+  String get totalSongDurationAsString =>
+      this.printCurrentDuration(this._totalSongDuration);
+  String get currentSongDurationAsString =>
+      this.printCurrentDuration(this._currentSongDuration);
 }
