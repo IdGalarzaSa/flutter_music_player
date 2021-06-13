@@ -1,7 +1,10 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:music_player/src/helpers/helpers.dart';
+import 'package:music_player/src/models/player_model.dart';
 import 'package:music_player/src/widgets/custom_appbar.dart';
+import 'package:provider/provider.dart';
 
 class MusicPlayerPage extends StatelessWidget {
   @override
@@ -100,6 +103,8 @@ class _DiscImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    final animationController = Provider.of<PlayerModel>(context);
+
     return Container(
       padding: EdgeInsets.all(20),
       height: size.height * 0.25,
@@ -109,7 +114,14 @@ class _DiscImage extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Image(image: AssetImage('assets/aurora.jpg')),
+            SpinPerfect(
+              duration: Duration(seconds: 10),
+              infinite: true,
+              manualTrigger: true,
+              controller: (currentController) =>
+                  animationController.controller = currentController,
+              child: Image(image: AssetImage('assets/aurora.jpg')),
+            ),
             Container(
               width: 25,
               height: 25,
@@ -215,16 +227,21 @@ class __InformationSongAndPlayButtonState
           FloatingActionButton(
               backgroundColor: Colors.amber,
               onPressed: () {
+                final discController =
+                    Provider.of<PlayerModel>(context, listen: false).controller;
+
                 if (isPlaying) {
                   isPlaying = false;
-                  animationController.reverse();
+                  animationController.forward();
+                  discController?.stop();
                 } else {
                   isPlaying = true;
-                  animationController.forward();
+                  animationController.reverse();
+                  discController?.repeat();
                 }
               },
               child: AnimatedIcon(
-                  icon: AnimatedIcons.play_pause,
+                  icon: AnimatedIcons.pause_play,
                   progress: animationController))
         ],
       ),
