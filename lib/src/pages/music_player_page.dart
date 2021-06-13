@@ -1,4 +1,5 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:music_player/src/helpers/helpers.dart';
@@ -103,7 +104,7 @@ class _DiscImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    final animationController = Provider.of<PlayerModel>(context);
+    final playerModel = Provider.of<PlayerModel>(context);
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -118,8 +119,9 @@ class _DiscImage extends StatelessWidget {
               duration: Duration(seconds: 10),
               infinite: true,
               manualTrigger: true,
+              animate: playerModel.isPlaying,
               controller: (currentController) =>
-                  animationController.controller = currentController,
+                  playerModel.controller = currentController,
               child: Image(image: AssetImage('assets/aurora.jpg')),
             ),
             Container(
@@ -191,9 +193,8 @@ class _InformationSongAndPlayButton extends StatefulWidget {
 class __InformationSongAndPlayButtonState
     extends State<_InformationSongAndPlayButton>
     with SingleTickerProviderStateMixin {
-  bool isPlaying = true;
-
   late AnimationController animationController;
+  final assetsAudioPlayer = AssetsAudioPlayer();
 
   @override
   void initState() {
@@ -213,6 +214,10 @@ class __InformationSongAndPlayButtonState
     super.dispose();
   }
 
+  void open() {
+    final playerModel = Provider.of<PlayerModel>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -227,21 +232,21 @@ class __InformationSongAndPlayButtonState
           FloatingActionButton(
               backgroundColor: Colors.amber,
               onPressed: () {
-                final discController =
-                    Provider.of<PlayerModel>(context, listen: false).controller;
+                final playerModel =
+                    Provider.of<PlayerModel>(context, listen: false);
 
-                if (isPlaying) {
-                  isPlaying = false;
-                  animationController.forward();
-                  discController?.stop();
-                } else {
-                  isPlaying = true;
+                if (playerModel.isPlaying) {
+                  playerModel.isPlaying = false;
                   animationController.reverse();
-                  discController?.repeat();
+                  playerModel.controller?.stop();
+                } else {
+                  playerModel.isPlaying = true;
+                  animationController.forward();
+                  playerModel.controller?.repeat();
                 }
               },
               child: AnimatedIcon(
-                  icon: AnimatedIcons.pause_play,
+                  icon: AnimatedIcons.play_pause,
                   progress: animationController))
         ],
       ),
