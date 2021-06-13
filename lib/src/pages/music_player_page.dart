@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:music_player/src/helpers/helpers.dart';
 import 'package:music_player/src/widgets/custom_appbar.dart';
 
 class MusicPlayerPage extends StatelessWidget {
@@ -11,27 +12,65 @@ class MusicPlayerPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(70),
-                  ),
-                  gradient: LinearGradient(
-                    colors: [Colors.white12, Colors.black38],
-                  )),
-              child: Column(
-                children: [
-                  CustomAppBar(),
-                  SizedBox(height: size.height * 0.05),
-                  _DiscImageAndPlayer(),
-                  SizedBox(height: size.height * 0.03),
-                  _InformationSongAndPlayButton(),
-                  SizedBox(height: size.height * 0.10),
-                ],
-              ),
-            )
+            _SongInformation(),
+            Expanded(child: _Lyrics()),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SongInformation extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(70),
+          ),
+          gradient: LinearGradient(
+            colors: [
+              Color(0xff33333E),
+              Color(0xff201E28),
+            ],
+          )),
+      child: Column(
+        children: [
+          CustomAppBar(),
+          SizedBox(height: size.height * 0.05),
+          _DiscImageAndPlayer(),
+          SizedBox(height: size.height * 0.03),
+          _InformationSongAndPlayButton(),
+          SizedBox(height: size.height * 0.10),
+        ],
+      ),
+    );
+  }
+}
+
+class _Lyrics extends StatelessWidget {
+  final lyrics = getLyrics();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: ListWheelScrollView(
+        physics: BouncingScrollPhysics(),
+        itemExtent: 42,
+        diameterRatio: 1.5,
+        children: lyrics
+            .map(
+              (newLine) => Text(
+                newLine,
+                style: TextStyle(
+                    fontSize: 20, color: Colors.white.withOpacity(0.8)),
+              ),
+            )
+            .toList(),
       ),
     );
   }
