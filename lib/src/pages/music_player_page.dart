@@ -6,8 +6,6 @@ import 'package:music_player/src/widgets/custom_appbar.dart';
 class MusicPlayerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -32,6 +30,8 @@ class _SongInformation extends StatelessWidget {
             bottomLeft: Radius.circular(70),
           ),
           gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.center,
             colors: [
               Color(0xff33333E),
               Color(0xff201E28),
@@ -44,7 +44,7 @@ class _SongInformation extends StatelessWidget {
           _DiscImageAndPlayer(),
           SizedBox(height: size.height * 0.03),
           _InformationSongAndPlayButton(),
-          SizedBox(height: size.height * 0.10),
+          SizedBox(height: size.height * 0.08),
         ],
       ),
     );
@@ -170,7 +170,37 @@ class _Player extends StatelessWidget {
   }
 }
 
-class _InformationSongAndPlayButton extends StatelessWidget {
+class _InformationSongAndPlayButton extends StatefulWidget {
+  @override
+  __InformationSongAndPlayButtonState createState() =>
+      __InformationSongAndPlayButtonState();
+}
+
+class __InformationSongAndPlayButtonState
+    extends State<_InformationSongAndPlayButton>
+    with SingleTickerProviderStateMixin {
+  bool isPlaying = true;
+
+  late AnimationController animationController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -183,14 +213,19 @@ class _InformationSongAndPlayButton extends StatelessWidget {
           ),
           Spacer(),
           FloatingActionButton(
-            backgroundColor: Colors.amber,
-            onPressed: () {},
-            child: Icon(
-              FontAwesomeIcons.play,
-              color: Colors.black,
-              size: 18,
-            ),
-          )
+              backgroundColor: Colors.amber,
+              onPressed: () {
+                if (isPlaying) {
+                  isPlaying = false;
+                  animationController.reverse();
+                } else {
+                  isPlaying = true;
+                  animationController.forward();
+                }
+              },
+              child: AnimatedIcon(
+                  icon: AnimatedIcons.play_pause,
+                  progress: animationController))
         ],
       ),
     );
